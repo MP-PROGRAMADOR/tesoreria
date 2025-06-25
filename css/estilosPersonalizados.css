@@ -1,0 +1,11 @@
+.TopDetallEntradaP{
+    width: 100%;
+}
+.TopDetallEntrada{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #f3f3f3;
+}
+

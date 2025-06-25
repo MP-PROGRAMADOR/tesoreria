@@ -1,0 +1,10 @@
+1. seccion o dpto
+2. el informe debe ser considereado como una entrada
+3. poner un buscardor donde hay varios registros
+4. institucion salida y entrada
+una
+varias
+persona fisica
+5. en los decretos agregar un input por si fuera alguien externo
+6. destino final del documento
+7.y realizar un rastreo de los documentos
