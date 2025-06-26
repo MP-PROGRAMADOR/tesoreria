@@ -318,7 +318,7 @@ $numero_salidas_total = mysqli_num_rows($resultado_salidas_total);
     <!-- graficas  -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <!--  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
 
 
