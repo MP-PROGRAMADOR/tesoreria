@@ -10,13 +10,13 @@
         
         <nav class="sidebar-nav">
             <div class="nav-item">
-                <a href="#" class="nav-link active">
+                <a href="index.php" class="nav-link active">
                     <i class="nav-icon bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="index.php?vista=entradas" class="nav-link">
                     <i class="nav-icon bi bi-folder-plus"></i>
                     <span>Entradas</span>
                 </a>
