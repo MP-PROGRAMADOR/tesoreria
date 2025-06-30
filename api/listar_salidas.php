@@ -51,7 +51,7 @@ try {
         $nuevoNum = 1;
     }
 
-    $response['nextRegister'] = 'SL-' . date('Y') . '-' . str_pad($nuevoNum, 3, '0', STR_PAD_LEFT);
+    $response['nextRegister'] = 'TGE-' . date('Y') . '-' . str_pad($nuevoNum, 3, '0', STR_PAD_LEFT);
 
     // --- Consulta principal con filtros ---
    $query = "

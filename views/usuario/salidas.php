@@ -1203,79 +1203,78 @@
 
 
         // --- Funciones CRUD ---
+// READ: Cargar y mostrar salidas
+async function loadSalidas() {
+    const query = `api/listar_salidas.php?limit=${recordsPerPage}&page=${currentPage}&search=${searchInputSalidas.value}`;
+    try {
+        const response = await fetch(query);
+        const result = await response.json();
 
-        // READ: Cargar y mostrar salidas
-        async function loadSalidas() {
-            const query = `api/listar_salidas.php?limit=${recordsPerPage}&page=${currentPage}&search=${searchInputSalidas.value}`;
-            try {
-                const response = await fetch(query);
-                const result = await response.json();
+        if (result.success) {
+            document.getElementById('totalSalidas').textContent = result.totalRecords;
+            document.getElementById('todaySalidas').textContent = result.todayRecords;
+            document.getElementById('monthSalidas').textContent = result.monthRecords;
+            document.getElementById('nextRegisterSalidas').textContent = result.nextRegister;
 
-                if (result.success) {
-                    document.getElementById('totalSalidas').textContent = result.totalRecords;
-                    document.getElementById('todaySalidas').textContent = result.todayRecords;
-                    document.getElementById('monthSalidas').textContent = result.monthRecords;
-                    document.getElementById('nextRegisterSalidas').textContent = result.nextRegister;
-
-                    tableBodySalidas.innerHTML = ''; // Limpiar tabla
-                    if (result.data.length > 0) {
-                        noDataSalidas.style.display = 'none';
-                        result.data.forEach(salida => {
-                            console.log(salida.EntradaRelacionadaNum)
-                            const row = tableBodySalidas.insertRow();
-                            row.innerHTML = `
-                            <td>${salida.NumRegistro}</td>
-                            <td>${salida.FechaRegistro}</td>
-                            <td>${salida.TipoDoc}</td>
-                            <td>${salida.Descripcion}</td>
-                            <td>${salida.PalabrasClaves}</td>
-                            <td>${salida.NombreReferencia || 'N/A'}</td>
-                            <td>${salida.FechaFirma || 'N/A'}</td>
-                            <td>${salida.Importe || 'N/A'}</td>
-                            <td>${getDestinoDisplay(salida)}</td>
-                           <td>${salida.EntradaRelacionadaNum != null && salida.EntradaRelacionadaNum.toString().trim() !== ''
-                                    ? salida.EntradaRelacionadaNum
-                                    : 'No'
-                                }</td>
-
-                            <td>${salida.NombreArchivo ? `<a href="api/uploads/salidas/${salida.NombreArchivo}" target="_blank">Ver</a>` : 'N/A'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-info" onclick="showEditModal(${salida.Id})">Editar</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteSalida(${salida.Id})">Eliminar</button>
-                            </td>
-                        `;
-                        });
-                    } else {
-                        noDataSalidas.style.display = 'block';
-                    }
-                    updatePagination(result.totalRecords);
-                } else {
-                    alert('Error al cargar las salidas: ' + result.message);
-                    console.error('Error al cargar las salidas:', result.message);
-                    noDataSalidas.style.display = 'block';
-                    noDataSalidas.querySelector('h3').textContent = 'Error al cargar datos';
-                    noDataSalidas.querySelector('p').textContent = result.message;
-                }
-            } catch (error) {
-                alert('Error de conexión al servidor.');
-                console.error('Error de red:', error);
+            tableBodySalidas.innerHTML = ''; // Limpiar tabla
+            if (result.data.length > 0) {
+                noDataSalidas.style.display = 'none';
+                result.data.forEach(salida => {
+                    console.log(salida.EntradaRelacionadaNum); // Keep this for debugging if needed
+                    const row = tableBodySalidas.insertRow();
+                    row.innerHTML = `
+                        <td>${salida.NumRegistro}</td>
+                        <td>${salida.FechaRegistro}</td>
+                        <td>${salida.TipoDoc}</td>
+                        <td>${salida.Descripcion}</td>
+                        <td>${salida.PalabrasClaves}</td>
+                        <td>${salida.NombreReferencia || 'N/A'}</td>
+                        <td>${salida.FechaFirma || 'N/A'}</td>
+                        <td>${salida.Importe || 'N/A'}</td>
+                        <td>${getDestinoDisplay(salida)}</td> <td>${salida.EntradaRelacionadaNum != null && salida.EntradaRelacionadaNum.toString().trim() !== ''
+                                ? salida.EntradaRelacionadaNum
+                                : 'No'
+                            }</td>
+                        <td>${salida.NombreArchivo ? `<a href="api/uploads/salidas/${salida.NombreArchivo}" target="_blank">Ver</a>` : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="showEditModal(${salida.Id})">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSalida(${salida.Id})">Eliminar</button>
+                        </td>
+                    `;
+                });
+            } else {
                 noDataSalidas.style.display = 'block';
-                noDataSalidas.querySelector('h3').textContent = 'Error de conexión';
-                noDataSalidas.querySelector('p').textContent = 'No se pudo conectar al servidor para obtener las salidas.';
+                noDataSalidas.querySelector('h3').textContent = 'No se encontraron salidas';
+                noDataSalidas.querySelector('p').textContent = 'No hay registros de salidas que coincidan con la búsqueda.';
             }
+            updatePagination(result.totalRecords);
+        } else {
+            alert('Error al cargar las salidas: ' + result.message);
+            console.error('Error al cargar las salidas:', result.message);
+            noDataSalidas.style.display = 'block';
+            noDataSalidas.querySelector('h3').textContent = 'Error al cargar datos';
+            noDataSalidas.querySelector('p').textContent = result.message;
         }
+    } catch (error) {
+        alert('Error de conexión al servidor.');
+        console.error('Error de red:', error);
+        noDataSalidas.style.display = 'block';
+        noDataSalidas.querySelector('h3').textContent = 'Error de conexión';
+        noDataSalidas.querySelector('p').textContent = 'No se pudo conectar al servidor para obtener las salidas.';
+    }
+}
 
-        function getDestinoDisplay(salida) {
-            if (salida.DestinoTipo === 'pf') {
-                return `Persona Física: ${salida.PersonaFisicaDestino || 'N/A'}`;
-            } else if (salida.DestinoTipo === 'pj') {
-                return `Institución: ${salida.InstitucionDestino || 'N/A'}`; // Mejorar esto para mostrar el nombre de la institución
-            } else if (salida.DestinoTipo === 'vpj') {
-                return `Múltiples: ${salida.MultiplesDestinos || 'N/A'}`;
-            }
-            return 'N/A';
-        }
-
+// Adjusted getDestinoDisplay function
+function getDestinoDisplay(salida) {
+    if (salida.destinoTipo === 'pf') {
+        return `Persona Física: ${salida.envioA || 'N/A'}`;
+    } else if (salida.destinoTipo === 'pj') {
+        return `Institución: ${salida.envioA || 'N/A'}`;
+    } else if (salida.destinoTipo === 'vpj') {
+        return `Múltiples: ${salida.envioA || 'N/A'}`; // This will now show "Varias Personas Jurídicas"
+    }
+    return 'N/A';
+}
 
         // CREATE: Enviar nuevo formulario de salida
         registerFormSalidas.addEventListener('submit', async function (e) {

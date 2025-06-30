@@ -28,15 +28,15 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="index.php?vista=decretos" class="nav-link">
                     <i class="nav-icon bi bi-file-earmark-text"></i>
                     <span>Decretos</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="index.php?vista=pagos" class="nav-link">
                     <i class="nav-icon bi bi-graph-up"></i>
-                    <span>Reportes</span>
+                    <span>Pagos</span>
                 </a>
             </div>
         </nav>

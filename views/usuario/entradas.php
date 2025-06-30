@@ -509,10 +509,624 @@
         opacity: 1;
     }
 </style>
-
+ 
 <style>
-    /* ... (Your existing CSS here) ... */
+    /* Variables CSS para una gestión de colores más sencilla */
+    :root {
+        --primary-color: #3498db;
+        /* Un azul profesional */
+        --primary-dark-color: #2980b9;
+        --secondary-color: #6c757d;
+        /* Gris oscuro para texto secundario */
+        --light-gray: #e9ecef;
+        /* Fondo claro para tarjetas/elementos */
+        --border-color: #ced4da;
+        /* Color de borde estándar */
+        --background-color: #f8f9fa;
+        /* Fondo general de la página */
+        --white: #ffffff;
+        --black: #000000;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --info-color: #17a2b8;
+    }
+
+
+
+
+    /* Sección de estadísticas */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background-color: var(--white);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid var(--light-gray);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.8em;
+        font-weight: bold;
+        color: var(--primary-color);
+        /* Color primario para números importantes */
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 0.95em;
+        color: var(--secondary-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Controles (búsqueda y botón de añadir) */
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+        /* Espacio entre elementos */
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        /* Permite que la caja de búsqueda crezca */
+        min-width: 250px;
+        /* Ancho mínimo para la caja de búsqueda */
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        /* Espacio para el icono */
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        /* Bordes más redondeados */
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background-color: var(--white);
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        /* Sombra al enfocar */
+    }
+
+    .search-box .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        fill: var(--secondary-color);
+        /* Icono en gris */
+        opacity: 0.7;
+    }
+
+    /* Botones */
+    .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        text-transform: capitalize;
+        /* Capitalizar la primera letra */
+        letter-spacing: 0.2px;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--white);
+        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-secondary {
+        background-color: var(--light-gray);
+        color: var(--secondary-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background-color: #dee2e6;
+        color: #5a6268;
+        transform: translateY(-1px);
+    }
+
+    .btn-small {
+        padding: 8px 16px;
+        font-size: 0.85em;
+        border-radius: 20px;
+    }
+
+    /* Botones de acción específicos para la tabla */
+    .btn-info {
+        background-color: var(--info-color);
+        color: var(--white);
+    }
+
+    .btn-info:hover {
+        background-color: #117a8b;
+    }
+
+    .btn-warning {
+        background-color: var(--warning-color);
+        color: var(--black);
+        /* Texto negro para mejor contraste con amarillo */
+    }
+
+    .btn-warning:hover {
+        background-color: #d39e00;
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        color: var(--white);
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    /* Tabla */
+    .table-container {
+        overflow-x: auto;
+        /* Permite scroll horizontal en tablas grandes */
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--light-gray);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+        /* Asegura que la tabla tenga un ancho mínimo para el scroll */
+    }
+
+    .table th,
+    .table td {
+        padding: 15px;
+        text-align: left;
+        white-space: nowrap;
+        /* Evita que el texto se rompa en varias líneas */
+    }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--primary-dark-color);
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Sin datos */
+    .no-data {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--secondary-color);
+    }
+
+    .no-data svg {
+        width: 70px;
+        height: 70px;
+        fill: var(--border-color);
+        /* Color suave para el icono */
+        margin-bottom: 20px;
+    }
+
+    .no-data h3 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    .no-data p {
+        font-size: 1em;
+    }
+
+    /* Paginación */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .pagination button {
+        background-color: var(--white);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 40px;
+        /* Asegura un tamaño mínimo para los botones */
+    }
+
+    .pagination button:hover:not(:disabled) {
+        background-color: var(--primary-color);
+        color: var(--white);
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .pagination button.active {
+        background-color: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
+    }
+
+    .pagination button:disabled {
+        background-color: var(--light-gray);
+        color: var(--secondary-color);
+        border-color: var(--border-color);
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .pagination-info {
+        margin: 0 10px;
+        font-size: 0.9em;
+        color: var(--secondary-color);
+    }
+
+    /* Modal centrado */
+    .modal {
+        display: none;
+        /* Oculto inicialmente */
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 0.5rem;
+        max-width: 700px;
+        width: 90%;
+        padding: 2rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.3s ease-out;
+
+    }
+
+    /* Cuando quieres mostrar el modal */
+    .modal.show {
+        display: flex;
+    }
+
+
+    /* Opcional: Estilo para el contenido del modal */
+
+    /* Animación opcional */
+    @keyframes slideFadeIn {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 20px 25px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.6em;
+    }
+
+    .close {
+        color: var(--white);
+        font-size: 30px;
+        font-weight: bold;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+    }
+
+    .close:hover,
+    .close:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        outline: none;
+    }
+
+    .modal-body {
+        padding: 25px;
+        flex-grow: 1;
+        /* Permite que el cuerpo ocupe el espacio restante */
+        overflow-y: auto;
+        /* Scroll dentro del cuerpo del modal si es necesario */
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px 25px;
+        border-top: 1px solid #eee;
+        gap: 10px;
+    }
+
+    /* Formularios */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #444;
+        font-size: 0.95em;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group input[type="file"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-sizing: border-box;
+        /* Incluye padding y border en el ancho */
+        font-size: 1em;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="date"]:focus,
+    .form-group input[type="file"]:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        /* Solo permite redimensionar verticalmente */
+        min-height: 90px;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        /* Permite que los elementos se envuelvan */
+        gap: 20px;
+        /* Espacio entre los radio buttons */
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Íconos SVG */
+    .icon {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        fill: currentColor;
+        /* Asegura que el SVG use el color de texto del padre */
+        transition: transform 0.2s ease-in-out;
+    }
+
+    /* Animación de iconos en botones al hacer hover */
+    button:hover .icon {
+        transform: scale(1.1);
+    }
+
+    /* Tooltip */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 90px;
+        /* Ancho ajustado para el texto */
+        background-color: #333;
+        color: var(--white);
+        text-align: center;
+        font-size: 12px;
+        padding: 7px 8px;
+        border-radius: 5px;
+        position: absolute;
+        z-index: 1001;
+        /* Asegura que esté por encima del modal */
+        bottom: 125%;
+        /* Posiciona encima del elemento */
+        left: 50%;
+        transform: translateX(-50%);
+        /* Centra el tooltip */
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        pointer-events: none;
+        /* No interfiere con clics */
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* Media Queries para Responsividad */
+    @media (max-width: 768px) {
+
+        .stats {
+            grid-template-columns: 1fr 1fr;
+            /* 2 columnas en pantallas medianas */
+        }
+
+        .controls {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            /* Botones ocupan todo el ancho */
+            justify-content: center;
+            padding: 10px 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 10px;
+        }
+
+        .modal-content {
+            width: 98%;
+            margin: 10px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3em;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+            /* Botones del footer apilados */
+            padding: 15px 20px;
+        }
+
+        .modal-footer .btn {
+            width: auto;
+            /* Restaurar ancho automático para los botones del footer */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats {
+            grid-template-columns: 1fr;
+            /* 1 columna en pantallas pequeñas */
+        }
+
+        .stat-card {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+        }
+
+        .search-box input {
+            padding: 10px 12px 10px 35px;
+        }
+
+        .btn {
+            font-size: 0.9em;
+            padding: 10px 15px;
+        }
+
+        .table {
+            min-width: 600px;
+            /* Ajustar el mínimo ancho de la tabla si es necesario */
+        }
+    }
 </style>
+
 
 
 <div class="container-fluid p-4">

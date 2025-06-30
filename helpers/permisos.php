@@ -31,7 +31,8 @@ function verificarAcceso($vista)
             'dashboard_usuario',
             'entradas',
             'salidas',
-            'decretos'
+            'decretos',
+            'pagos'
         ]
     ];
 

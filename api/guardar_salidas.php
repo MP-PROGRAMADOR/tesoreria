@@ -46,20 +46,20 @@ try {
     $pdo->beginTransaction();
 
     // Generar número de registro
-    $stmt = $pdo->prepare("SELECT MAX(NumRegistro) AS last_reg FROM salidas WHERE NumRegistro LIKE 'SL-%'");
+    $stmt = $pdo->prepare("SELECT MAX(NumRegistro) AS last_reg FROM salidas WHERE NumRegistro LIKE 'TGE-%'");
     $stmt->execute();
     $lastReg = $stmt->fetchColumn();
 
     $year = date('Y');
     $newNum = 1;
-    if ($lastReg && preg_match('/SL-(\d{4})-(\d+)/', $lastReg, $matches)) {
+    if ($lastReg && preg_match('/TGE-(\d{4})-(\d+)/', $lastReg, $matches)) {
         $lastYear = (int)$matches[1];
         $lastNum = (int)$matches[2];
         if ($lastYear == $year) {
             $newNum = $lastNum + 1;
         }
     }
-    $newNumRegistro = "SL-$year-" . str_pad($newNum, 3, '0', STR_PAD_LEFT);
+    $newNumRegistro = "TGE-$year-" . str_pad($newNum, 3, '0', STR_PAD_LEFT);
 
     // Subida de archivo
     $nombreArchivo = null;
