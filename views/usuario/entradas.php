@@ -1133,70 +1133,54 @@
     /**
      * Updates an existing entry in the backend.
      */
-    async function updateEntry() {
-        const form = document.getElementById('editForm');
-        const formData = new FormData(form);
-        const entryId = formData.get('editId'); // Get the ID from the hidden input
+   async function updateEntry() {
+    const form = document.getElementById('editForm');
+    const formData = new FormData(form); // Esto ya incluye el archivo si hay
 
-        // Basic client-side validations.
-        if (!formData.get('editTipoDoc') || !formData.get('editDescripcion')) {
-            showNotification('Por favor, completa los campos obligatorios para la edición.', 'warning');
-            return;
-        }
+    // Validación básica
+    if (!formData.get('editTipoDoc') || !formData.get('editDescripcion')) {
+        showNotification('Por favor, completa los campos obligatorios para la edición.', 'warning');
+        return;
+    }
 
-        // Construct the payload for the update API call
-        const payload = {
-            Id: entryId,
-            TipoDoc: formData.get('editTipoDoc'),
-            Descripcion: formData.get('editDescripcion'),
-            PalabrasClaves: formData.get('editPalabrasClaves'),
-            FechaFirma: formData.get('editFechaFirma'),
-            Importe: formData.get('editImporte'),
-            Referencia: formData.get('editReferencia')
-            // You'll need to add logic for `procede de` (persona fisica/juridica)
-            // if you want to update that information. This will likely require
-            // separate fields or a more complex single field in your `update_entrada.php`
-            // to handle the relationship updates in `personafisica` or `proviene`.
-        };
+    // Verificamos quién procede y limpiamos el que no se envía
+    const selectedProcede = document.querySelector('input[name="editProcede"]:checked');
+    if (selectedProcede) {
+        formData.append('editProcede', selectedProcede.value);
 
-        const selectedProcede = document.querySelector('input[name="editProcede"]:checked');
-        if (selectedProcede) {
-            if (selectedProcede.value === 'pf') {
-                payload.procedeDeTipo = 'pf';
-                payload.nombrePersona = formData.get('editNombrePersona');
-            } else if (selectedProcede.value === 'pj') {
-                payload.procedeDeTipo = 'pj';
-                payload.institucionId = formData.get('editInstitucion');
-            }
-        }
-
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/actualizar_entrada.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json' // Send as JSON for updates
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                await fetchEntriesData(); // Reload data
-                updateStats();
-                renderTable();
-                renderPagination();
-                closeModal('editModal');
-                showNotification(result.message, 'success');
-            } else {
-                throw new Error(result.message || 'Error al actualizar la entrada.');
-            }
-        } catch (error) {
-            console.error('Error al actualizar la entrada:', error);
-            showNotification(`Error: ${error.message}`, 'error');
+        if (selectedProcede.value === 'pf') {
+            formData.delete('editInstitucion');
+        } else if (selectedProcede.value === 'pj') {
+            formData.delete('editNombrePersona');
         }
     }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/actualizar_entrada.php`, {
+            method: 'POST',
+            body: formData // No usar headers aquí, FormData los gestiona automáticamente
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            await fetchEntriesData(); // Si tienes esta función, actualiza los datos
+            updateStats();
+            renderTable();
+            renderPagination();
+            closeModal('editModal');
+            showNotification(result.message, 'success');
+        } else {
+            const messages = Array.isArray(result.messages) ? result.messages.join('<br>') : result.message;
+            showNotification(messages, 'error');
+        }
+
+    } catch (error) {
+        console.error('Error al actualizar la entrada:', error);
+        showNotification(`Error inesperado: ${error.message}`, 'error');
+    }
+}
+
 
     /**
      * Deletes an entry from the backend.
@@ -1277,17 +1261,9 @@
                                 <path d="M12 20h9" />
                                 <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                             </svg>
-                        </button>
-                        <button class="btn btn-warning btn-small" onclick="deleteEntry(${entry.Id})">
-                            <!-- ícono eliminar -->
-                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M6 7h12M10 11v6m4-6v6M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M5 7v12a2 2 0 002 2h10a2 2 0 002-2V7" />
-                            </svg>
-                        </button>
+                        </button> 
                         ${entry.Archivo
-                                            ? `<a href="uploads/entradas/${entry.Archivo}" class="btn btn-success btn-small" target="_blank" download>
+                                            ? `<a href="api/${entry.Archivo}" class="btn btn-success btn-small" target="_blank" download>
                                         <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round"

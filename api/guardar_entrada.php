@@ -77,7 +77,7 @@ if ($Procede === 'pj' && empty($Institucion)) {
 // Validación y subida de archivo
 $uploadedFilePath = null;
 if ($file && $file['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../uploads/entradas/';
+    $uploadDir = 'uploads/entradas/';
     $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
     $maxSize = 5 * 1024 * 1024;
 
@@ -93,17 +93,28 @@ if ($file && $file['error'] === UPLOAD_ERR_OK) {
         $errors[] = "Archivo muy grande (máx. 5MB).";
     }
 
-    if (empty($errors)) {
-        $uniqueName = uniqid('entrada_', true) . '.' . $ext;
-        $destination = $uploadDir . $uniqueName;
+   if (empty($errors)) {
+    // Generar nombre corto del archivo: ejemplo ENT240626_4832.pdf
+    $prefix = 'ENT';
+    $shortDate = date('ymd'); // Ej: 240626
+    $rand = mt_rand(1000, 9999); // 4 dígitos aleatorios
+    $shortName = "{$prefix}{$shortDate}_{$rand}.{$ext}";
 
-        if (move_uploaded_file($file['tmp_name'], $destination)) {
-            chmod($destination, 0644);
-            $uploadedFilePath = $destination;
-        } else {
-            $errors[] = "No se pudo guardar el archivo.";
+    $destination = $uploadDir . $shortName;
+
+    if (move_uploaded_file($file['tmp_name'], $destination)) {
+        chmod($destination, 0644);
+        $uploadedFilePath = $destination;
+
+        // Elimina el archivo anterior si se sube uno nuevo
+        if ($oldFilePath && file_exists($oldFilePath) && $oldFilePath !== $destination) {
+            unlink($oldFilePath);
         }
+    } else {
+        $errors[] = "No se pudo guardar el nuevo archivo.";
     }
+}
+
 }
 
 if (!empty($errors)) {
